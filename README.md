@@ -1,5 +1,5 @@
 <div align="center">
-<img width="460" src="https://raw.githubusercontent.com/fajfer/shoutboxy-pl-scraper/main/assets/logo.png">
+<img width="460" src="https://raw.githubusercontent.com/fajfer/shoutboxy-pl-scraper/main/assets/logo.jpg">
 </div>
 
 # Shoutboxy.pl scraper #
