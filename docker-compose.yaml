@@ -1,0 +1,13 @@
+version: "3.7"
+services:
+  shoutboxy-bot:
+    container_name: shoutboxy-scraper
+    image: fajfer/shoutboxy-pl-scraper:latest
+    restart: always
+    environment: # example
+      - SHOUTBOX_URL=https://www.shoutboxy.pl/shoutbox/get_shouts.php?id=66727&key=906820945&premium=0&_=1659272531592
+      - GROUPS=@wp_pl,10101010,@global_news
+      - BOT_TOKEN=000000:AAAAAABBBBBBCCCCCCC
+      - MSG_DELAY=60
+    volumes:
+      - ./history:/app/history
