@@ -4,14 +4,16 @@ from typing import Any, Mapping, NamedTuple
 
 from loguru import logger
 from requests import get
-from telegram.ext import CallbackContext, Updater
 
-BOT_TOKEN = environ["BOT_TOKEN"]
 MSG_DELAY = int(environ["MSG_DELAY"])
 SHOUTBOX_URL = environ["SHOUTBOX_URL"]
-GROUPS = environ["GROUPS"].split(",")
 HISTORY_FILE_PATH = "history"
 FLOOD_PREVENTION_DELAY_SECONDS = 2
+
+TELEGRAM_API = "https://api.telegram.org/bot{}/sendMessage?chat_id={}&text={}"
+BOT_TOKEN = environ["BOT_TOKEN"]
+GROUPS = environ["GROUPS"]
+VALID_TELEGRAM_CONFIG = BOT_TOKEN and GROUPS
 
 
 class Update(NamedTuple):
@@ -21,18 +23,19 @@ class Update(NamedTuple):
 
 
 def main() -> None:
-    updater = Updater(token=BOT_TOKEN, use_context=True)
-    updater.job_queue.run_repeating(shoutbox_monitor, MSG_DELAY)
-    updater.start_polling()
-    updater.idle()
+    if not VALID_TELEGRAM_CONFIG:
+        logger.error("Not valid config for Telegram!")
+        return
+    while not sleep(MSG_DELAY):
+        shoutbox_monitor()
 
 
-def shoutbox_monitor(context: CallbackContext) -> None:
+def shoutbox_monitor() -> None:
     updates = get_updates()
     new_updates = select_new_updates(updates, get_latest_id())
     for update in new_updates:
         store_latest_id(update.id)
-        send_update(context, update)
+        send_update(update.user, update.content)
 
 
 def get_latest_id() -> int:
@@ -65,10 +68,10 @@ def select_new_updates(updates: list[Update], latest_id: int) -> list[Update]:
     return [update for update in updates if update.id > latest_id]
 
 
-def send_update(context: CallbackContext, update: Update) -> None:
-    for group in GROUPS:
-        context.bot.send_message(group, f"{update.user}: {update.content}")
-    sleep(FLOOD_PREVENTION_DELAY_SECONDS)  # Dirty anti-flood prevention
+def send_update(user: str, content: str) -> None:
+    for group in GROUPS.split(","):
+        get(TELEGRAM_API.format(BOT_TOKEN, group, f"{user}: {content}"))
+    sleep(FLOOD_PREVENTION_DELAY_SECONDS)  # Dirty flood prevention
 
 
 if __name__ == "__main__":

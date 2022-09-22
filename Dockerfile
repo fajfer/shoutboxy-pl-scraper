@@ -2,7 +2,7 @@ FROM python:3.9.13-alpine
 
 WORKDIR /app
 
-RUN pip install loguru python-telegram-bot requests
+RUN pip install loguru requests
 
 COPY src ./src
 
