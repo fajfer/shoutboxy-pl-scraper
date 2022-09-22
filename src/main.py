@@ -2,7 +2,7 @@ from os import environ
 from time import sleep
 
 from loguru import logger
-from requests import get
+from requests import get, post
 
 from history import get_latest_id, store_latest_id
 from updates import get_updates, select_new_updates
@@ -14,6 +14,10 @@ TELEGRAM_API = "https://api.telegram.org/bot{}/sendMessage?chat_id={}&text={}"
 BOT_TOKEN = environ["BOT_TOKEN"]
 GROUPS = environ["GROUPS"]
 VALID_TELEGRAM_CONFIG = BOT_TOKEN and GROUPS
+
+WEBHOOKS = environ.get("WEBHOOKS")
+AVATAR_URL = environ.get("AVATAR_URL")
+VALID_DISCORD_CONFIG = WEBHOOKS is not None
 
 
 def main() -> None:
@@ -33,9 +37,26 @@ def shoutbox_monitor() -> None:
 
 
 def send_update(user: str, content: str) -> None:
+    if VALID_TELEGRAM_CONFIG:
+        send_update_telegram(user, content)
+    if VALID_DISCORD_CONFIG:
+        send_update_discord(user, content)
+    sleep(FLOOD_PREVENTION_DELAY_SECONDS)  # Dirty flood prevention
+
+
+def send_update_telegram(user: str, content: str) -> None:
     for group in GROUPS.split(","):
         get(TELEGRAM_API.format(BOT_TOKEN, group, f"{user}: {content}"))
-    sleep(FLOOD_PREVENTION_DELAY_SECONDS)  # Dirty flood prevention
+
+
+def send_update_discord(user: str, content: str) -> None:
+    for webhook_url in WEBHOOKS.split(","):
+        update_payload = {
+            "content": content,
+            "username": user,
+            "avatar_url": AVATAR_URL,
+        }
+        post(webhook_url, json=update_payload)
 
 
 if __name__ == "__main__":

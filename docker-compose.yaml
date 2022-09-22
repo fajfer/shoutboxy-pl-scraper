@@ -1,14 +1,20 @@
-version: "3.7"
+version: "3.9"
+
 services:
-  shoutboxy-bot:
-    container_name: shoutboxy-scraper
+  shoutboxy-pl-scraper:
+    container_name: shoutboxy-pl-scraper
     image: fajfer/shoutboxy-pl-scraper:latest
     build: .
     restart: always
     environment: # example
+      # Mandatory variables for both Telegram and Discord
+      - MSG_DELAY=60
       - SHOUTBOX_URL=https://www.shoutboxy.pl/shoutbox/get_shouts.php?id=66727&key=906820945&premium=0&_=1659272531592
+      # Telegram variables
       - GROUPS=@wp_pl,10101010,@global_news
       - BOT_TOKEN=000000:AAAAAABBBBBBCCCCCCC
-      - MSG_DELAY=60
+      # Discord variables
+      - WEBHOOKS=https://discord.com/api/webhooks/.../...,https://discord.com/api/webhooks/.../...
+      # - AVATAR_URL=  # Optional webhook avatar URL
     volumes:
       - ./history:/app/history
