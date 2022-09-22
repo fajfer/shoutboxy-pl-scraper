@@ -1,13 +1,14 @@
-from telegram import Update
-from telegram.ext import Updater, CommandHandler, CallbackContext
-from requests import get
-from loguru import logger
+from os import environ
 from time import sleep
-import os
+
+from loguru import logger
+from requests import get
+from telegram import Update
+from telegram.ext import CallbackContext, CommandHandler, Updater
 
 
 def send_motd(update: Update, context: CallbackContext) -> None:
-    resp = get(os.environ["SHOUTBOX_URL"])
+    resp = get(environ["SHOUTBOX_URL"])
     motd = resp.json()["sticky"]["bold"]
     update.message.reply_text(motd)
 
@@ -23,7 +24,7 @@ def send_message(
 def tg_shoutbox_monitor(context: CallbackContext) -> None:
     with open("history") as histfile:
         old_msg_id = histfile.read()
-    resp = get(os.environ["SHOUTBOX_URL"])
+    resp = get(environ["SHOUTBOX_URL"])
     messages = resp.json()["all"]
     for message in messages[::-1]:
         with open("history") as histfile:
@@ -37,15 +38,15 @@ def tg_shoutbox_monitor(context: CallbackContext) -> None:
             with open("history", "w") as histfile:
                 histfile.write(message["id"])
                 send_message(
-                    context, message["username"], message["shout"], os.environ["GROUPS"]
+                    context, message["username"], message["shout"], environ["GROUPS"]
                 )
 
 
-updater = Updater(token=os.environ["BOT_TOKEN"], use_context=True)
+updater = Updater(token=environ["BOT_TOKEN"], use_context=True)
 updater.dispatcher.add_handler(CommandHandler("motd", send_motd))
 
 job_queue = updater.job_queue
-job_queue.run_repeating(tg_shoutbox_monitor, int(os.environ["MSG_DELAY"]))
+job_queue.run_repeating(tg_shoutbox_monitor, int(environ["MSG_DELAY"]))
 
 updater.start_polling()
 updater.idle()
