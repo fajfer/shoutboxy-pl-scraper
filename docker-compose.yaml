@@ -3,6 +3,7 @@ services:
   shoutboxy-bot:
     container_name: shoutboxy-scraper
     image: fajfer/shoutboxy-pl-scraper:latest
+    build: .
     restart: always
     environment: # example
       - SHOUTBOX_URL=https://www.shoutboxy.pl/shoutbox/get_shouts.php?id=66727&key=906820945&premium=0&_=1659272531592
