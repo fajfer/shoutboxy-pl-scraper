@@ -3,14 +3,7 @@ from time import sleep
 
 from loguru import logger
 from requests import get
-from telegram import Update
-from telegram.ext import CallbackContext, CommandHandler, Updater
-
-
-def send_motd(update: Update, context: CallbackContext) -> None:
-    resp = get(environ["SHOUTBOX_URL"])
-    motd = resp.json()["sticky"]["bold"]
-    update.message.reply_text(motd)
+from telegram.ext import CallbackContext, Updater
 
 
 def send_message(
@@ -43,7 +36,6 @@ def tg_shoutbox_monitor(context: CallbackContext) -> None:
 
 
 updater = Updater(token=environ["BOT_TOKEN"], use_context=True)
-updater.dispatcher.add_handler(CommandHandler("motd", send_motd))
 
 job_queue = updater.job_queue
 job_queue.run_repeating(tg_shoutbox_monitor, int(environ["MSG_DELAY"]))
