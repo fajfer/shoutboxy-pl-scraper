@@ -7,7 +7,7 @@ from telegram.ext import CallbackContext, Updater
 
 
 def send_message(
-    context: CallbackContext, author: str, message: str, groups: [str]
+    context: CallbackContext, author: str, message: str, groups: list[str]
 ) -> None:
     for group in groups.split(","):
         context.bot.send_message(group, f"{author}: {message}")
