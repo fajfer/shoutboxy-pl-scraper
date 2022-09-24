@@ -21,8 +21,8 @@ VALID_DISCORD_CONFIG = WEBHOOKS is not None
 
 
 def main() -> None:
-    if not VALID_TELEGRAM_CONFIG:
-        logger.error("Not valid config for Telegram!")
+    if not VALID_TELEGRAM_CONFIG and not VALID_DISCORD_CONFIG:
+        logger.error("Not valid config for either Telegram nor Discord!")
         return
     while not sleep(MSG_DELAY):
         shoutbox_monitor()
