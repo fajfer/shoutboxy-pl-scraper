@@ -11,8 +11,8 @@ MSG_DELAY = int(environ["MSG_DELAY"])
 FLOOD_PREVENTION_DELAY_SECONDS = 2
 
 TELEGRAM_API = "https://api.telegram.org/bot{}/sendMessage?chat_id={}&text={}"
-BOT_TOKEN = environ["BOT_TOKEN"]
-GROUPS = environ["GROUPS"]
+BOT_TOKEN = environ.get("BOT_TOKEN")
+GROUPS = environ.get("GROUPS")
 VALID_TELEGRAM_CONFIG = BOT_TOKEN and GROUPS
 
 WEBHOOKS = environ.get("WEBHOOKS")
