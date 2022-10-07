@@ -5,7 +5,7 @@ services:
     container_name: shoutboxy-pl-scraper
     image: fajfer/shoutboxy-pl-scraper:latest
     build: .
-    restart: always
+    restart: unless-stopped
     environment: # example
       # Mandatory variables for both Telegram and Discord
       - MSG_DELAY=60
