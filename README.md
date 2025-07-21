@@ -17,7 +17,7 @@ Ten "scraper" to mały skrypt w Pythonie pozwalający na odbieranie wiadomości 
 
 ### Budowanie projektu  ###
 
-Zbudowanie projektu polega na uruchomieniu polecenia
+Zbudowanie projektu lokalnie polega na uruchomieniu polecenia
 
 ```console
 docker build --network=host -t fajfer/shoutboxy-pl-scraper:latest .
@@ -34,7 +34,7 @@ docker run \
   --env BOT_TOKEN='<token>' \
   --env MSG_DELAY='<int>' \
   --volume ./history:/app/history \
-  fajfer/shoutboxy-pl-scraper:latest
+  ghcr.io/fajfer/shoutboxy-pl-scraper:latest
 ```
 
 ### Docker compose ###

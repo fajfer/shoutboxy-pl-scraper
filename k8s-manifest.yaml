@@ -23,7 +23,7 @@ spec:
     spec:
       containers:
         - name: bizzariusz-bot
-          image: fajfer/shoutboxy-pl-scraper:latest
+          image: ghcr.io/fajfer/shoutboxy-pl-scraper:latest
           imagePullPolicy: Always
           env:
             - name: SHOUTBOX_URL

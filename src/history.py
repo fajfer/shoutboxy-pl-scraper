@@ -1,4 +1,4 @@
-HISTORY_FILE_PATH = "history"
+HISTORY_FILE_PATH = "history/log.txt"
 
 
 def get_latest_id() -> int:
