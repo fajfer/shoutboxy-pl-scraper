@@ -1,0 +1,77 @@
+# Przykład jedynie na telegram
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: gai
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: bizzariusz-bot
+  namespace: gai
+spec:
+  serviceName: bizzariusz-bot
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bizzariusz-bot
+  template:
+    metadata:
+      labels:
+        app: bizzariusz-bot
+    spec:
+      containers:
+        - name: bizzariusz-bot
+          image: fajfer/shoutboxy-pl-scraper:latest
+          imagePullPolicy: Always
+          env:
+            - name: SHOUTBOX_URL
+              value: "https://www.shoutboxy.pl/shoutbox/get_shouts.php?id=66727&key=906820945&premium=0&_=1659272531592"
+            - name: GROUPS
+              value: "@wp_pl,@onet_pl"
+            - name: BOT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: bizzariusz-bot-secret
+                  key: BOT_TOKEN
+            - name: MSG_DELAY
+              value: "60"
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "64Mi"
+            limits:
+              cpu: "200m"
+              memory: "256Mi"
+          volumeMounts:
+            - name: history
+              mountPath: /app/history
+              readOnly: false
+      volumes:
+        - name: history
+          persistentVolumeClaim:
+            claimName: bizzariusz-bot-history-pvc
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: bizzariusz-bot-secret
+  namespace: gai
+type: Opaque
+stringData:
+  BOT_TOKEN: "000000:AAAAAABBBBBBCCCCCCC"
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: bizzariusz-bot-history-pvc
+  namespace: gai
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Mi
